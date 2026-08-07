@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waterlogged & Flood-Prone Route Advisor | Gemini AI Urban Commuter Safety</title>
+  <meta name="description" content="Gemini AI-Powered Urban Flooding Advisor helping citizens navigate waterlogged roads safely." />
+  
+  <!-- React & Babel CDNs for instant browser execution -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide-react@latest"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Modern CSS Design Tokens & Utilities */
+    :root {
+      --bg-dark: #0b132b;
+      --bg-card: rgba(28, 37, 65, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --primary-cyan: #00f2fe;
+      --primary-blue: #4facfe;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(79, 172, 254, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(11, 19, 43, 1) 0px, transparent 100%);
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .app-header {
+      display: flex; justify-content: space-between; align-items: center; padding: 16px 28px;
+      background: rgba(11, 19, 43, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--glass-border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .brand-logo {
+      width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary-cyan), var(--primary-blue));
+      border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: #0b132b;
+      font-weight: bold; font-size: 1.2rem;
+    }
+    .brand-title {
+      font-size: 1.25rem; font-weight: 700;
+      background: linear-gradient(90deg, #ffffff, var(--primary-cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .brand-subtitle { font-size: 0.78rem; color: var(--text-muted); }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px;
+      border-radius: var(--radius-md); font-size: 0.88rem; font-weight: 600; cursor: pointer;
+      border: 1px solid transparent; transition: all 0.2s ease;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--primary-cyan), var(--primary-blue)); color: #0b132b; }
+    .btn-danger { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #fda4af; }
+    .btn-outline { background: rgba(255, 255, 255, 0.05); border-color: var(--glass-border); color: #fff; }
+    .dashboard-grid { display: grid; grid-template-columns: 420px 1fr; gap: 20px; padding: 24px 28px; }
+    @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    .glass-card {
+      background: var(--bg-card); backdrop-filter: blur(16px); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px;
+    }
+    .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+    .query-input {
+      width: 100%; padding: 14px 44px; background: rgba(11, 19, 43, 0.7); border: 1.5px solid var(--glass-border);
+      border-radius: var(--radius-md); color: #fff; outline: none; font-size: 0.92rem;
+    }
+    .sample-pill {
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 20px;
+      padding: 5px 12px; font-size: 0.76rem; color: var(--text-muted); cursor: pointer; margin: 4px;
+    }
+    .vehicle-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .vehicle-card {
+      display: flex; flex-direction: column; align-items: center; padding: 10px 4px; background: rgba(11, 19, 43, 0.6);
+      border: 1.5px solid var(--glass-border); border-radius: var(--radius-md); cursor: pointer; text-align: center;
+    }
+    .vehicle-card.selected { border-color: var(--primary-cyan); background: rgba(0, 242, 254, 0.12); }
+    .risk-badge { padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.82rem; }
+    .risk-badge.HIGH { background: rgba(244, 63, 94, 0.2); border: 1px solid #f43f5e; color: #fda4af; }
+    .risk-badge.MODERATE { background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fcd34d; }
+    .risk-badge.SAFE { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; }
+    .map-container { height: 480px; width: 100%; border-radius: var(--radius-lg); background: #090f1e; overflow: hidden; position: relative; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // Hardcoded Dataset
+    const VEHICLES = {
+      TWO_WHEELER: { id: 'TWO_WHEELER', name: '2-Wheeler', maxDepthCm: 15, limitText: '15cm Limit' },
+      AUTO: { id: 'AUTO', name: 'Auto', maxDepthCm: 20, limitText: '20cm Limit' },
+      HATCHBACK_SEDAN: { id: 'HATCHBACK_SEDAN', name: 'Sedan/Car', maxDepthCm: 30, limitText: '30cm Limit' },
+      SUV_4X4: { id: 'SUV_4X4', name: 'SUV/4x4', maxDepthCm: 45, limitText: '45cm Limit' },
+      BUS_TRUCK: { id: 'BUS_TRUCK', name: 'Bus/Truck', maxDepthCm: 70, limitText: '70cm Limit' }
+    };
+
+    const HOTSPOTS = [
+      { id: 'chingrighata', name: 'Chingrighata Underpass', zone: 'EM Bypass', depthCm: 38, coords: [22.5645, 88.3980] },
+      { id: 'park_circus', name: 'Park Circus 7-Point', zone: 'Central', depthCm: 32, coords: [22.5448, 88.3695] },
+      { id: 'ultadanga', name: 'Ultadanga Hudco Underpass', zone: 'North', depthCm: 46, coords: [22.5930, 88.3840] },
+      { id: 'behala', name: 'Behala Tram Depot', zone: 'South', depthCm: 42, coords: [22.4975, 88.3180] },
+      { id: 'sec5', name: 'Salt Lake Sec V', zone: 'IT Hub', depthCm: 18, coords: [22.5765, 88.4330] }
+    ];
+
+    function App() {
+      const [query, setQuery] = useState('Commuting from Salt Lake Sector V to Park Circus on a scooter during heavy downpour');
+      const [vehicle, setVehicle] = useState('TWO_WHEELER');
+      const [weather, setWeather] = useState('HEAVY');
+      const [highTide, setHighTide] = useState(true);
+
+      const vehicleInfo = VEHICLES[vehicle];
+      const depthMultiplier = weather === 'CLOUDBURST' ? 1.8 : weather === 'HEAVY' ? 1.3 : 0.6;
+
+      const evaluatedHotspots = HOTSPOTS.map(h => {
+        let depth = Math.round(h.depthCm * depthMultiplier + (highTide ? 10 : 0));
+        return { ...h, dynamicDepth: depth, isUnsafe: depth > vehicleInfo.maxDepthCm };
+      });
+
+      const maxEncountered = Math.max(...evaluatedHotspots.map(h => h.dynamicDepth));
+      const isHighRisk = maxEncountered > vehicleInfo.maxDepthCm;
+
+      return (
+        <div>
+          <header className="app-header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div className="brand-logo">🌊</div>
+              <div>
+                <h1 className="brand-title">Waterlogged Route Advisor</h1>
+                <p className="brand-subtitle">Gemini AI Commuter Flood Navigation</p>
+              </div>
+            </div>
+            <button className="btn btn-danger" onClick={() => alert('KMC Disaster Helpline: 033-2286-1212 | Traffic Police: 1073')}>
+              🚨 Emergency SOS
+            </button>
+          </header>
+
+          <main className="dashboard-grid">
+            <div>
+              <div className="glass-card">
+                <div className="card-title">✨ Gemini Natural Language Query</div>
+                <input
+                  className="query-input"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+                <div style={{ marginTop: '10px' }}>
+                  <button className="sample-pill" onClick={() => setQuery('Scooter travel from Salt Lake Sector V to Park Circus')}>
+                    Scooter: Sector V to Park Circus
+                  </button>
+                  <button className="sample-pill" onClick={() => setQuery('Is Ultadanga Underpass safe for a Hatchback car right now?')}>
+                    Hatchback: Ultadanga Underpass
+                  </button>
+                </div>
+              </div>
+
+              <div className="glass-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className={`risk-badge ${isHighRisk ? 'HIGH' : 'SAFE'}`}>
+                    {isHighRisk ? 'HIGH RISK 🚨' : 'SAFE ROUTE ✅'}
+                  </span>
+                  <span style={{ fontSize: '0.85rem' }}>
+                    Max Depth: <strong>{maxEncountered}cm</strong> (Limit: {vehicleInfo.maxDepthCm}cm)
+                  </span>
+                </div>
+              </div>
+
+              <div className="glass-card">
+                <div className="card-title">🚘 Select Vehicle Type</div>
+                <div className="vehicle-grid">
+                  {Object.values(VEHICLES).map(v => (
+                    <div
+                      key={v.id}
+                      className={`vehicle-card ${vehicle === v.id ? 'selected' : ''}`}
+                      onClick={() => setVehicle(v.id)}
+                    >
+                      <div style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>{v.name}</div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{v.limitText}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="glass-card">
+                <div className="card-title">🌧️ Live Sandbox Controls</div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button className={`btn ${weather==='LIGHT'?'btn-primary':'btn-outline'}`} onClick={()=>setWeather('LIGHT')}>Light Rain</button>
+                  <button className={`btn ${weather==='HEAVY'?'btn-primary':'btn-outline'}`} onClick={()=>setWeather('HEAVY')}>Heavy Downpour</button>
+                  <button className={`btn ${weather==='CLOUDBURST'?'btn-primary':'btn-outline'}`} onClick={()=>setWeather('CLOUDBURST')}>Cloudburst</button>
+                </div>
+                <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>🌊 Ganges River High Tide Lockgate State</span>
+                  <input type="checkbox" checked={highTide} onChange={()=>setHighTide(!highTide)} />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="glass-card">
+                <div className="card-title">🗺️ Urban Flood Hotspots & Safe Bypass Route</div>
+                <div className="map-container">
+                  <svg viewBox="0 0 800 480" style={{ width: '100%', height: '100%' }}>
+                    <rect width="100%" height="100%" fill="#090f1e" />
+                    <path d="M 100 0 C 120 150, 90 300, 100 480" fill="none" stroke="#4facfe" strokeWidth="30" opacity="0.3" />
+                    
+                    {/* Direct flooded path */}
+                    <path d="M 680 100 L 520 200 L 400 260 L 260 380" fill="none" stroke="#f43f5e" strokeWidth="4" strokeDasharray="8 6" />
+                    {/* Gemini Safe Bypass */}
+                    <path d="M 680 100 L 600 50 L 360 80 L 200 180 L 260 380" fill="none" stroke="#10b981" strokeWidth="5" />
+
+                    {evaluatedHotspots.map((h, idx) => (
+                      <g key={h.id} transform={`translate(${200 + idx*120}, ${120 + idx*50})`}>
+                        <circle r={h.isUnsafe ? 14 : 9} fill={h.isUnsafe ? '#f43f5e' : '#10b981'} stroke="#fff" strokeWidth="2" />
+                        <text y="-18" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="bold">
+                          {h.name} ({h.dynamicDepth}cm)
+                        </text>
+                      </g>
+                    ))}
+
+                    <g transform="translate(680, 100)">
+                      <circle r="8" fill="#00f2fe" />
+                      <text y="20" textAnchor="middle" fill="#00f2fe" fontSize="11" fontWeight="bold">Origin: Sec V</text>
+                    </g>
+                    <g transform="translate(260, 380)">
+                      <circle r="8" fill="#10b981" />
+                      <text y="20" textAnchor="middle" fill="#10b981" fontSize="11" fontWeight="bold">Dest: Park Circus</text>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+
+              <div className="glass-card">
+                <div className="card-title">🤖 Gemini AI Advisory Recommendation</div>
+                <div style={{ background: isHighRisk ? 'rgba(244, 63, 94, 0.12)' : 'rgba(16, 185, 129, 0.12)', padding: '16px', borderRadius: '12px', border: `1px solid ${isHighRisk?'#f43f5e':'#10b981'}` }}>
+                  <h3 style={{ fontSize: '0.96rem', fontWeight: 'bold', marginBottom: '6px' }}>
+                    {isHighRisk ? `🚨 HIGH RISK FLOOD WARNING for ${vehicleInfo.name}` : `✅ SAFE ROUTE: Navigable for ${vehicleInfo.name}`}
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: '#e2e8f0' }}>
+                    {isHighRisk 
+                      ? `Water level (${maxEncountered}cm) exceeds your ${vehicleInfo.name} safe wading depth (${vehicleInfo.maxDepthCm}cm). Do not enter Chingrighata or Ultadanga underpasses! Follow the green bypass route via Salt Lake Bypass & AJC Bose Road Flyover.`
+                      : `Route is clear under current conditions. Water levels remain below your vehicle's maximum clearance limit.`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
